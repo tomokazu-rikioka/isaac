@@ -41,14 +41,12 @@ case "${COMMAND}" in
         ;;
 
     soarm-setup)
-        echo "=== SO-ARM101 更新・再インストール ==="
+        echo "=== SO-ARM101 再インストール ==="
         if [ ! -d "${SOARM_DIR}" ]; then
             echo "ERROR: ${SOARM_DIR} が見つかりません。Docker イメージを再ビルドしてください。"
             exit 1
         fi
         cd "${SOARM_DIR}"
-        echo "最新コードを取得中..."
-        git pull
         echo "再インストール中..."
         rm -rf .venv
         uv pip install --system --no-deps -e .
