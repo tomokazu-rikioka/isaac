@@ -47,7 +47,8 @@ isaac/
 │   └── docker-compose.yml       # Docker Compose ビルド設定
 ├── slurm/
 │   ├── build.sh                 # Slurm バッチジョブスクリプト（Docker ビルド）
-│   └── train.sh                 # Slurm バッチジョブスクリプト（RL トレーニング）
+│   ├── train.sh                 # Slurm バッチジョブスクリプト（RL トレーニング）
+│   └── play.sh                  # Slurm バッチジョブスクリプト（評価・動画生成）
 ├── scripts/
 │   ├── env.sh                   # 共通環境変数定義
 │   ├── setup-remote.sh          # リモート初期セットアップ（環境確認・Docker ビルド）
