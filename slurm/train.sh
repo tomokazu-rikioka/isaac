@@ -3,8 +3,8 @@
 # バッチジョブ: SO-ARM101 RL トレーニング（ヘッドレス）
 #
 # 使い方:
-#   sbatch ~/isaac/slurm/train.sh
-#   sbatch ~/isaac/slurm/train.sh SO-ARM100-Reach-v0
+#   cd ~/isaac && sbatch slurm/train.sh
+#   cd ~/isaac && sbatch slurm/train.sh SO-ARM100-Reach-v0
 #
 #SBATCH --job-name=isaac-train
 #SBATCH --gpus=1
@@ -13,9 +13,14 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/../scripts/env.sh"
+
 TASK="${1:-SO-ARM100-Reach-v0}"
-IMAGE="isaac-lab:2.3.2"
 CONTAINER_NAME="isaac-train-${USER}-$$"
+
+# ログディレクトリの確保（SBATCH --output の相対パス用）
+mkdir -p "${HOME}/isaac/logs"
 
 echo "============================================"
 echo "  Isaac Lab Batch Training"
@@ -26,19 +31,16 @@ echo "  GPU   : CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-not set}"
 echo "  Start : $(date)"
 echo "============================================"
 
-TRAIN_SCRIPT="/workspace/projects/isaac_so_arm101/src/isaac_so_arm101/scripts/rsl_rl/train.py"
-
 docker run --rm \
     --name "${CONTAINER_NAME}" \
     --gpus "device=${CUDA_VISIBLE_DEVICES}" \
     -e ACCEPT_EULA=Y \
     -e PRIVACY_CONSENT=Y \
-    -v "${HOME}/isaac:/mnt/isaac" \
     -v "${HOME}/isaac/logs:/workspace/isaaclab/logs" \
     -v "${HOME}/isaac/scripts:/workspace/scripts:ro" \
     --entrypoint bash \
     "${IMAGE}" \
-    -c "cd /workspace/isaaclab && ./isaaclab.sh -p ${TRAIN_SCRIPT} --task ${TASK} --headless"
+    -c "source /workspace/scripts/env.sh && cd \${SOARM_DIR} && \${PYTHON} -m isaac_so_arm101.scripts.rsl_rl.train --task ${TASK} --headless"
 
 echo ""
 echo "============================================"

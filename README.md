@@ -45,11 +45,9 @@ isaac/
 ├── slurm/
 │   └── train.sh                 # Slurm バッチジョブスクリプト（RL トレーニング）
 ├── scripts/
+│   ├── env.sh                   # 共通環境変数定義
 │   ├── setup-remote.sh          # リモート初期セットアップ（環境確認・Docker ビルド）
-│   ├── run-in-container.sh      # コンテナ内ヘルパー（test/cartpole/soarm-*）
-│   ├── soarm-setup.sh           # SO-ARM101 依存関係インストール
-│   ├── soarm-train.sh           # SO-ARM101 トレーニング実行
-│   └── verify-and-train.sh      # トレーニング検証・起動スクリプト
+│   └── run-in-container.sh      # コンテナ内ヘルパー（test/cartpole/soarm-*）
 └── docs/
     ├── setup-guide.md           # 詳細セットアップ手順書
     └── status-report.md         # リアルタイム可視化の試行記録

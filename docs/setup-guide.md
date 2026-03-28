@@ -33,7 +33,7 @@ Mac (local)                   Login Node                Compute Node (A100 GPU)
 ssh a100-highreso
 ```
 
-### 1.2 環��確認
+### 1.2 環境確認
 
 ```bash
 # Docker
@@ -181,39 +181,28 @@ cd /workspace/isaaclab
 
 ## Phase 5: SO-ARM101 ロボットアーム チュートリアル
 
-### 5.1 プロジェ��トセットアップ
+### 5.1 プロジェクトセットアップ
 
-コンテナ内で:
+カスタム Docker イメージ（`isaac-lab:2.3.2`）には SO-ARM101 がプリインストール済み。
+追加セットアップは不要。
 
+最新版に更新する場合のみ:
 ```bash
-docker exec -it isaac-lab bash
-
-# プロジェクトディレクトリに移動
-mkdir -p /workspace/projects
-cd /workspace/projects
-
-# SO-ARM101 リポジトリをクローン
-git clone https://github.com/MuammerBay/isaac_so_arm101.git
-cd isaac_so_arm101
-
-# 依存関係のインストール（カスタム Docker イメージ使用時はインストール済み）
-# 手動セットアップの場合:
-uv pip install --system --no-deps -e .
+docker exec -it isaac-lab bash /workspace/scripts/run-in-container.sh soarm-setup
 ```
 
 > **バージョン競合でエラーが出た場合**:
 > `isaac_so_arm101` が `isaaclab==2.3.0` を要求し、コンテナには2.3.2が入っている場合:
 > ```bash
-> # バージョンピンを緩和
+> cd /workspace/projects/isaac_so_arm101
 > sed -i 's/isaaclab\[all,isaacsim\]==2.3.0/isaaclab[all,isaacsim]>=2.3.0,<2.4.0/' pyproject.toml
-> uv sync
+> uv pip install --system --no-deps -e .
 > ```
 
 ### 5.2 利用可能な環境の確認
 
 ```bash
-cd /workspace/projects/isaac_so_arm101
-uv run list_envs
+docker exec -it isaac-lab bash /workspace/scripts/run-in-container.sh soarm-list
 # 期待:
 #   SO-ARM100-Reach-v0        (トレーニング用)
 #   SO-ARM100-Reach-Play-v0   (評価用)
@@ -222,27 +211,26 @@ uv run list_envs
 ### 5.3 トレーニング（ヘッドレス）
 
 ```bash
-cd /workspace/projects/isaac_so_arm101
-
-# RL トレーニング開始
-uv run train --task SO-ARM100-Reach-v0 --headless
+docker exec -it isaac-lab bash /workspace/scripts/run-in-container.sh soarm-train
+# デフォルト: SO-ARM100-Reach-v0
 # 期待: トレーニングの進捗ログが表示される
 # 学習済みモデルは logs/ 以下に保存される
+
+# タスクを指定する場合:
+docker exec -it isaac-lab bash /workspace/scripts/run-in-container.sh soarm-train SO-ARM100-Reach-v0
 ```
 
 > **長時間トレーニングにはバッチジョブを推奨**:
 > ```bash
 > # ログインノードから
-> sbatch ~/isaac/slurm/train.sh
+> cd ~/isaac && sbatch slurm/train.sh
 > ```
 
 ### 5.4 学習済みポリシーの評価（ヘッドレス + 動画生成）
 
 ```bash
-cd /workspace/projects/isaac_so_arm101
-
-# 学習済みポリシーの実行（動画生成）
-uv run play --task SO-ARM100-Reach-Play-v0 --headless --video --video_length 200
+docker exec -it isaac-lab bash /workspace/scripts/run-in-container.sh soarm-play
+# デフォルト: SO-ARM100-Reach-Play-v0
 # 期待: 動画ファイルが logs/ 以下に生成される
 ```
 
@@ -261,8 +249,8 @@ scp -r a100-highreso:~/isaac/logs/ ./logs/
 ```bash
 ssh a100-highreso
 
-# ���レーニングジョブ投��
-sbatch ~/isaac/slurm/train.sh
+# トレーニングジョブ投入
+cd ~/isaac && sbatch slurm/train.sh
 
 # ジョブ状態確認
 squeue -u $(whoami)
@@ -287,7 +275,7 @@ docker login nvcr.io
 # Username: $oauthtoken
 # Password: <NGC API Key>
 
-# リトラ��
+# リトライ
 docker pull nvcr.io/nvidia/isaac-lab:2.3.2
 ```
 
@@ -333,13 +321,13 @@ Host a100-highreso
     ServerAliveCountMax 3
 ```
 
-### uv sync でバージョン競合
+### バージョン競合でインストールが失敗する
 
 ```bash
 # pyproject.toml のバージョンピンを緩和
 cd /workspace/projects/isaac_so_arm101
 sed -i 's/isaaclab\[all,isaacsim\]==2.3.0/isaaclab[all,isaacsim]>=2.3.0,<2.4.0/' pyproject.toml
-uv sync
+uv pip install --system --no-deps -e .
 ```
 
 ### ディスク容量不足
@@ -364,11 +352,9 @@ isaac/
 ├── slurm/
 │   └── train.sh                # バッチトレーニングジョブ
 ├── scripts/
+│   ├── env.sh                  # 共通環境変数定義
 │   ├── setup-remote.sh         # リモート初期セットアップ
-│   ├── run-in-container.sh     # コンテナ内ヘルパー
-│   ├── verify-and-train.sh     # SO-ARM101 検証＆トレーニング
-│   ├── soarm-setup.sh          # SO-ARM101 セットアップ
-│   └── soarm-train.sh          # SO-ARM101 トレーニング
+│   └── run-in-container.sh     # コンテナ内ヘルパー（全操作の単一エントリポイント）
 └── docs/
     ├── setup-guide.md          # この手順書
     └── status-report.md        # リアルタイム可視化 試行記録

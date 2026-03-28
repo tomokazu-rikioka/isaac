@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# コンテナ内でチュートリアルを実行するヘルパースクリプト
+# コンテナ内操作の単一エントリポイント
 #
 # 使い方:
 #   docker exec -it isaac-lab bash /workspace/scripts/run-in-container.sh [command]
@@ -8,7 +8,7 @@
 # コマンド:
 #   test          - 基本動作確認（ヘッドレス）
 #   cartpole      - Cart-Poleチュートリアル（ヘッドレス）
-#   soarm-setup   - SO-ARM101プロジェクトセットアップ
+#   soarm-setup   - SO-ARM101を最新に更新・再インストール
 #   soarm-train   - SO-ARM101トレーニング（ヘッドレス）
 #   soarm-play    - SO-ARM101評価（ヘッドレス + 動画生成）
 #   soarm-list    - 利用可能な環境一覧
@@ -19,9 +19,8 @@ set -euo pipefail
 export PATH="${HOME}/.local/bin:${PATH}"
 
 COMMAND="${1:-help}"
-ISAACLAB_DIR="/workspace/isaaclab"
-SOARM_DIR="/workspace/projects/isaac_so_arm101"
-PYTHON="/workspace/isaaclab/_isaac_sim/kit/python/bin/python3"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "${SCRIPT_DIR}/env.sh"
 
 case "${COMMAND}" in
     test)
@@ -38,28 +37,20 @@ case "${COMMAND}" in
         ;;
 
     soarm-setup)
-        echo "=== Setting up SO-ARM101 project ==="
-        mkdir -p /workspace/projects
-
+        echo "=== SO-ARM101 更新・再インストール ==="
         if [ ! -d "${SOARM_DIR}" ]; then
-            echo "Cloning isaac_so_arm101..."
-            cd /workspace/projects
-            git clone https://github.com/MuammerBay/isaac_so_arm101.git
-        else
-            echo "Repository already exists. Pulling latest..."
-            cd "${SOARM_DIR}"
-            git pull
+            echo "ERROR: ${SOARM_DIR} が見つかりません。Docker イメージを再ビルドしてください。"
+            exit 1
         fi
-
         cd "${SOARM_DIR}"
-
-        echo "Installing SO-ARM101..."
+        echo "最新コードを取得中..."
+        git pull
+        echo "再インストール中..."
         rm -rf .venv
         uv pip install --system --no-deps -e .
-
         echo ""
-        echo "=== Setup complete! ==="
-        echo "Available environments:"
+        echo "=== 更新完了 ==="
+        echo "利用可能な環境:"
         $PYTHON -c "import gymnasium as gym; import isaac_so_arm101; [print(f'  {e}') for e in gym.envs.registry if 'SO' in e.upper() or 'ARM' in e.upper()]"
         ;;
 
@@ -90,7 +81,7 @@ case "${COMMAND}" in
         echo "Commands:"
         echo "  test          - Basic headless test"
         echo "  cartpole      - Cart-Pole tutorial (headless)"
-        echo "  soarm-setup   - Setup SO-ARM101 project"
+        echo "  soarm-setup   - Update & reinstall SO-ARM101"
         echo "  soarm-train   - Train SO-ARM101 (headless)"
         echo "  soarm-play    - Evaluate SO-ARM101 (headless + video)"
         echo "  soarm-list    - List available environments"
