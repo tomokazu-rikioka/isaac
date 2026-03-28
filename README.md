@@ -16,10 +16,13 @@ cd ~/isaac && git pull                                        # 2回目以降
 # 3. 初期セットアップ（初回のみ）
 bash ~/isaac/scripts/setup-remote.sh
 
-# 4. トレーニング実行
+# 4. Docker イメージのビルド（初回のみ）
+cd ~/isaac && sbatch slurm/build.sh
+
+# 5. トレーニング実行
 sbatch ~/isaac/slurm/train.sh
 
-# 5. ログ・動画をMacに転送
+# 6. ログ・動画をMacに転送
 scp -r a100-highreso:~/isaac/logs/ ./logs/
 ```
 
@@ -43,6 +46,7 @@ isaac/
 │   ├── Dockerfile               # Isaac Lab 2.3.2 カスタムイメージ定義
 │   └── docker-compose.yml       # Docker Compose ビルド設定
 ├── slurm/
+│   ├── build.sh                 # Slurm バッチジョブスクリプト（Docker ビルド）
 │   └── train.sh                 # Slurm バッチジョブスクリプト（RL トレーニング）
 ├── scripts/
 │   ├── env.sh                   # 共通環境変数定義

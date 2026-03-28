@@ -14,17 +14,6 @@ Mac (local)                   Login Node                Compute Node (A100 GPU)
                                                         +---------------------+
 ```
 
-## 前提条件
-
-| 項目 | 要件 |
-|------|------|
-| Mac | macOS (Terminal + SSH) |
-| リモート | A100 GPU, Docker, Slurm |
-| SSH | `ssh a100-highreso` で接続可能（`~/.ssh/config`設定済み） |
-| ネットワーク | 計算ノードからインターネット接続可能 |
-
----
-
 ## Phase 1: リモート環境の確認
 
 ### 1.1 ログインノードに接続
@@ -33,63 +22,11 @@ Mac (local)                   Login Node                Compute Node (A100 GPU)
 ssh a100-highreso
 ```
 
-### 1.2 環境確認
-
-```bash
-# Docker
-docker --version
-# 期待: Docker version 24.0 以上
-
-docker compose version
-# 期待: Docker Compose version v2.25.0 以上
-
-# Slurm
-sinfo
-# 期待: パーティション一覧が表示される
-
-# ディスク容量（15GB以上必要）
-df -h ~
-```
-
-### 1.3 GPU確認（計算ノードで実行）
-
-ログインノードにGPUがない場合、インタラクティブジョブで確認:
-
-```bash
-srun --gres=gpu:1 --time=00:30:00 --pty bash  # GPU確認のみインタラクティブ実行
-nvidia-smi
-# 期待: NVIDIA A100 が表示される
-
-# Docker GPU対応確認
-docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
-# 期待: コンテナ内からもA100が見える
-exit
-```
-
-> **もし `--gpus all` が動かない場合**: CDI方式を試す
-> ```bash
-> docker run --rm --device nvidia.com/gpu=all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
-> ```
-> 動いた場合、`docker-compose.yml` の `deploy` セクションを以下に変更:
-> ```yaml
-> devices:
->   - /dev/nvidia0:/dev/nvidia0
->   - /dev/nvidiactl:/dev/nvidiactl
->   - /dev/nvidia-uvm:/dev/nvidia-uvm
-> ```
-
 ---
 
 ## Phase 2: プロジェクトファイルの配置
 
-### 2.1 Mac側で変更をpush
-
-```bash
-cd ~/Documents/01_Program/physical-ai/isaac
-git add -A && git commit -m "Update Isaac Lab setup" && git push
-```
-
-### 2.2 リモート側でクローン or 更新
+### 2.1 リモート側でクローン or 更新
 
 初回:
 ```bash
@@ -105,45 +42,37 @@ cd ~/isaac && git pull
 
 ## Phase 3: Docker イメージの構築
 
-### 3.1 ベースイメージのpull
+### 3.1 ビルドジョブの投入
 
-**インタラクティブジョブで実行**（計算ノードでDockerを使うため）:
+バッチジョブでベースイメージのpullとカスタムイメージのビルドを実行:
 
 ```bash
-ssh a100-highreso
-
-# インタラクティブジョブを取得
-srun --gres=gpu:1 --time=02:00:00 --pty bash  # ビルドのみインタラクティブ実行
-
-# ベースイメージのpull（10-15GB、20-40分程度）
-docker pull nvcr.io/nvidia/isaac-lab:2.3.2
+cd ~/isaac && sbatch slurm/build.sh
 ```
 
-> **NGC認証が必要な場合**:
+### 3.2 ビルド状況の確認
+
+```bash
+# ジョブ状態確認
+squeue -u $(whoami)
+
+# ログ確認
+tail -f ~/isaac/logs/build_*.out
+```
+
+ビルド完了後、イメージを確認:
+```bash
+docker images | grep isaac-lab
+# isaac-lab   2.3.2   ...
+```
+
+> **NGC認証が必要な場合**（pullが失敗したとき）:
 > ```bash
 > docker login nvcr.io
 > # Username: $oauthtoken
 > # Password: <NGC API Key>
 > ```
-> NGC API Keyは https://ngc.nvidia.com/ から取得。
-
-### 3.2 カスタムイメージのビルド
-
-```bash
-cd ~/isaac/docker
-
-docker compose build isaac-lab
-# 期待: Successfully built isaac-lab:2.3.2
-
-# 確認
-docker images | grep isaac-lab
-# isaac-lab   2.3.2   ...
-```
-
-ビルド完了後、インタラクティブジョブを終了:
-```bash
-exit
-```
+> NGC API Keyは https://ngc.nvidia.com/ から取得。認証後、再度 `sbatch slurm/build.sh` を実行。
 
 ---
 
@@ -350,6 +279,7 @@ isaac/
 │   ├── Dockerfile              # Isaac Lab イメージ
 │   └── docker-compose.yml      # ビルド定義
 ├── slurm/
+│   ├── build.sh                # バッチビルドジョブ（Docker pull & build）
 │   └── train.sh                # バッチトレーニングジョブ
 ├── scripts/
 │   ├── env.sh                  # 共通環境変数定義
