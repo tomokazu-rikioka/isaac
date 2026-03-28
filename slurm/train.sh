@@ -13,14 +13,14 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/../scripts/env.sh"
+PROJECT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+source "${PROJECT_DIR}/scripts/env.sh"
 
 TASK="${1:-SO-ARM100-Reach-v0}"
 CONTAINER_NAME="isaac-train-${USER}-$$"
 
 # ログディレクトリの確保（SBATCH --output の相対パス用）
-mkdir -p "${HOME}/isaac/logs"
+mkdir -p "${PROJECT_DIR}/logs"
 
 echo "============================================"
 echo "  Isaac Lab Batch Training"
@@ -36,8 +36,8 @@ docker run --rm \
     --gpus "device=${CUDA_VISIBLE_DEVICES}" \
     -e ACCEPT_EULA=Y \
     -e PRIVACY_CONSENT=Y \
-    -v "${HOME}/isaac/logs:/workspace/isaaclab/logs" \
-    -v "${HOME}/isaac/scripts:/workspace/scripts:ro" \
+    -v "${PROJECT_DIR}/logs:/workspace/isaaclab/logs" \
+    -v "${PROJECT_DIR}/scripts:/workspace/scripts:ro" \
     --entrypoint bash \
     "${IMAGE}" \
     -c "source /workspace/scripts/env.sh && cd \${SOARM_DIR} && \${PYTHON} -m isaac_so_arm101.scripts.rsl_rl.train --task ${TASK} --headless"
