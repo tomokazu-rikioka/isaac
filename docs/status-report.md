@@ -10,7 +10,7 @@
 | Docker | 24.0.6 / Compose v2.29.7 |
 | NVIDIA Runtime | `nvidia` (デフォルトは `runc`) |
 | Slurm | シングルノード（login = compute） |
-| Docker Image | `isaac-lab-headless:2.3.2` (ビルド済み) |
+| Docker Image | `isaac-lab:2.3.2` (ビルド済み) |
 | SSH接続 | Mac → bastion (as-highreso.com:30022) → A100 (172.30.35.49:10022) |
 
 ## 成功した項目

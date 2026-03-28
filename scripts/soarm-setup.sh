@@ -1,11 +1,12 @@
 #!/bin/bash
-set -e
+# SO-ARM101 ランタイムセットアップ（Dockerfile で既にインストール済みの場合は不要）
+# ベースイメージから直接使う場合、または再セットアップが必要な場合に利用
+set -euo pipefail
 
 PYTHON=/workspace/isaaclab/_isaac_sim/kit/python/bin/python3
-PIP="$PYTHON -m pip"
 
 # Install missing Python deps
-$PIP install toml 2>&1 | tail -1
+uv pip install --system toml 2>&1 | tail -1
 
 # Install RL frameworks via isaaclab.sh
 echo "=== Installing RL dependencies ==="
@@ -14,9 +15,9 @@ cd /workspace/isaaclab
 
 # Install SO-ARM101 package
 echo "=== Installing SO-ARM101 ==="
-cd /mnt/isaac/isaac_so_arm101
+cd /workspace/projects/isaac_so_arm101
 rm -rf .venv
-$PIP install -e . --no-deps 2>&1 | tail -3
+uv pip install --system --no-deps -e . 2>&1 | tail -3
 
 # Verify
 echo "=== Isaac Lab version ==="

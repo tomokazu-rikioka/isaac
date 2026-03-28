@@ -38,7 +38,7 @@ ssh a100-highreso
 ```bash
 # Docker
 docker --version
-# 期待: Docker version 26.0.0 以上
+# 期待: Docker version 24.0 以上
 
 docker compose version
 # 期待: Docker Compose version v2.25.0 以上
@@ -196,8 +196,9 @@ cd /workspace/projects
 git clone https://github.com/MuammerBay/isaac_so_arm101.git
 cd isaac_so_arm101
 
-# 依存関係のインストール
-uv sync
+# 依存関係のインストール（カスタム Docker イメージ使用時はインストール済み）
+# 手動セットアップの場合:
+uv pip install --system --no-deps -e .
 ```
 
 > **バージョン競合でエラーが出た場合**:
@@ -365,6 +366,7 @@ isaac/
 ├── scripts/
 │   ├── setup-remote.sh         # リモート初期セットアップ
 │   ├── run-in-container.sh     # コンテナ内ヘルパー
+│   ├── verify-and-train.sh     # SO-ARM101 検証＆トレーニング
 │   ├── soarm-setup.sh          # SO-ARM101 セットアップ
 │   └── soarm-train.sh          # SO-ARM101 トレーニング
 └── docs/

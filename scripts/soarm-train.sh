@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 PYTHON=/workspace/isaaclab/_isaac_sim/kit/python/bin/python3
 TASK="${1:-SO-ARM100-Reach-v0}"
@@ -20,5 +20,5 @@ for e in envs:
 
 # Run training
 echo "=== Starting training ==="
-cd /workspace/isaac_so_arm101
+cd /workspace/projects/isaac_so_arm101
 $PYTHON -m isaac_so_arm101.scripts.rsl_rl.train --task "$TASK" --headless

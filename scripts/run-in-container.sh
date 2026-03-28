@@ -21,6 +21,7 @@ export PATH="${HOME}/.local/bin:${PATH}"
 COMMAND="${1:-help}"
 ISAACLAB_DIR="/workspace/isaaclab"
 SOARM_DIR="/workspace/projects/isaac_so_arm101"
+PYTHON="/workspace/isaaclab/_isaac_sim/kit/python/bin/python3"
 
 case "${COMMAND}" in
     test)
@@ -52,38 +53,35 @@ case "${COMMAND}" in
 
         cd "${SOARM_DIR}"
 
-        echo "Installing dependencies with uv..."
-        uv sync 2>/dev/null || {
-            echo "uv sync failed. Relaxing version pin..."
-            sed -i 's/isaaclab\[all,isaacsim\]==2.3.0/isaaclab[all,isaacsim]>=2.3.0,<2.4.0/' pyproject.toml
-            uv sync
-        }
+        echo "Installing SO-ARM101..."
+        rm -rf .venv
+        uv pip install --system --no-deps -e .
 
         echo ""
         echo "=== Setup complete! ==="
         echo "Available environments:"
-        uv run list_envs
+        $PYTHON -c "import gymnasium as gym; import isaac_so_arm101; [print(f'  {e}') for e in gym.envs.registry if 'SO' in e.upper() or 'ARM' in e.upper()]"
         ;;
 
     soarm-train)
         TASK="${2:-SO-ARM100-Reach-v0}"
         echo "=== Training SO-ARM101: ${TASK} (headless) ==="
         cd "${SOARM_DIR}"
-        uv run train --task "${TASK}" --headless
+        $PYTHON -m isaac_so_arm101.scripts.rsl_rl.train --task "${TASK}" --headless
         ;;
 
     soarm-play)
         TASK="${2:-SO-ARM100-Reach-Play-v0}"
         echo "=== Playing SO-ARM101: ${TASK} (headless + video) ==="
         cd "${SOARM_DIR}"
-        uv run play --task "${TASK}" --headless --video --video_length 200
+        $PYTHON -m isaac_so_arm101.scripts.rsl_rl.play --task "${TASK}" --headless --video --video_length 200
         echo "Video saved. Transfer to Mac: scp -r a100-highreso:~/isaac/logs/ ./logs/"
         ;;
 
     soarm-list)
         echo "=== Available SO-ARM101 environments ==="
         cd "${SOARM_DIR}"
-        uv run list_envs
+        $PYTHON -c "import gymnasium as gym; import isaac_so_arm101; [print(f'  {e}') for e in gym.envs.registry if 'SO' in e.upper() or 'ARM' in e.upper()]"
         ;;
 
     help|*)

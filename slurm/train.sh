@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-TASK="${1:-Isaac-SO-ARM100-Reach-v0}"
+TASK="${1:-SO-ARM100-Reach-v0}"
 IMAGE="isaac-lab:2.3.2"
 CONTAINER_NAME="isaac-train-${USER}-$$"
 
@@ -26,7 +26,7 @@ echo "  GPU   : CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-not set}"
 echo "  Start : $(date)"
 echo "============================================"
 
-TRAIN_SCRIPT="/workspace/isaac_so_arm101/src/isaac_so_arm101/scripts/rsl_rl/train.py"
+TRAIN_SCRIPT="/workspace/projects/isaac_so_arm101/src/isaac_so_arm101/scripts/rsl_rl/train.py"
 
 docker run --rm \
     --name "${CONTAINER_NAME}" \
