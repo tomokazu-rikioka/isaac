@@ -8,7 +8,6 @@
 # このスクリプトは以下を行う:
 #   1. 環境確認（Docker, GPU, Slurm）
 #   2. プロジェクトディレクトリ作成
-#   3. Docker イメージのpull & build
 #
 
 set -euo pipefail
@@ -19,7 +18,7 @@ echo "============================================"
 echo ""
 
 # --- 環境確認 ---
-echo "[1/6] Checking environment..."
+echo "[1/4] Checking environment..."
 
 echo -n "  Docker: "
 if command -v docker &>/dev/null; then
@@ -55,13 +54,13 @@ fi
 
 # --- ディスク容量確認 ---
 echo ""
-echo "[2/6] Checking disk space..."
+echo "[2/4] Checking disk space..."
 df -h "${HOME}" | tail -1
 echo "  (Isaac Lab image requires ~15GB+)"
 
 # --- プロジェクトディレクトリ ---
 echo ""
-echo "[3/6] Setting up project directory..."
+echo "[3/4] Setting up project directory..."
 PROJECT_DIR="${HOME}/isaac"
 mkdir -p "${PROJECT_DIR}/docker"
 mkdir -p "${PROJECT_DIR}/slurm"
@@ -71,7 +70,7 @@ echo "  Created: ${PROJECT_DIR}"
 
 # --- ファイルコピー確認 ---
 echo ""
-echo "[4/6] Checking project files..."
+echo "[4/4] Checking project files..."
 if [ -f "${PROJECT_DIR}/docker/Dockerfile" ]; then
     echo "  Project files found."
 else
@@ -81,31 +80,21 @@ else
     exit 1
 fi
 
-# --- Docker イメージ pull ---
-echo ""
-echo "[5/6] Pulling base Isaac Lab image (this may take 20-40 minutes)..."
-echo "  Image: nvcr.io/nvidia/isaac-lab:2.3.2"
-docker pull nvcr.io/nvidia/isaac-lab:2.3.2
-
-# --- Docker イメージ build ---
-echo ""
-echo "[6/6] Building Isaac Lab image..."
-cd "${PROJECT_DIR}/docker"
-
-docker compose build isaac-lab
-
 echo ""
 echo "============================================"
 echo "  Setup complete!"
 echo "============================================"
 echo ""
 echo "  次のステップ:"
-echo "  1. トレーニングジョブ実行:"
+echo "  1. Docker イメージのビルド:"
+echo "     cd ~/isaac && sbatch slurm/build.sh"
+echo ""
+echo "  2. トレーニングジョブ実行:"
 echo "     cd ~/isaac && sbatch slurm/train.sh"
 echo ""
-echo "  2. ログ確認:"
+echo "  3. ログ確認:"
 echo "     tail -f ~/isaac/logs/train_*.out"
 echo ""
-echo "  3. 動画・モデル転送（Mac側）:"
+echo "  4. 動画・モデル転送（Mac側）:"
 echo "     scp -r a100-highreso:~/isaac/logs/ ./logs/"
 echo "============================================"

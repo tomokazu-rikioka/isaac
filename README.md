@@ -51,7 +51,7 @@ isaac/
 │   └── play.sh                  # Slurm バッチジョブスクリプト（評価・動画生成）
 ├── scripts/
 │   ├── env.sh                   # 共通環境変数定義
-│   ├── setup-remote.sh          # リモート初期セットアップ（環境確認・Docker ビルド）
+│   ├── setup-remote.sh          # リモート初期セットアップ（環境確認・ディレクトリ作成）
 │   └── run-in-container.sh      # コンテナ内ヘルパー（test/cartpole/soarm-*）
 └── docs/
     ├── setup-guide.md           # 詳細セットアップ手順書

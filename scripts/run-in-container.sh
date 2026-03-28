@@ -22,6 +22,10 @@ COMMAND="${1:-help}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/env.sh"
 
+list_soarm_envs() {
+    $PYTHON -c "import gymnasium as gym; import isaac_so_arm101; [print(f'  {e}') for e in gym.envs.registry if 'SO' in e.upper() or 'ARM' in e.upper()]"
+}
+
 case "${COMMAND}" in
     test)
         echo "=== Running basic test (headless) ==="
@@ -51,18 +55,18 @@ case "${COMMAND}" in
         echo ""
         echo "=== 更新完了 ==="
         echo "利用可能な環境:"
-        $PYTHON -c "import gymnasium as gym; import isaac_so_arm101; [print(f'  {e}') for e in gym.envs.registry if 'SO' in e.upper() or 'ARM' in e.upper()]"
+        list_soarm_envs
         ;;
 
     soarm-train)
-        TASK="${2:-SO-ARM100-Reach-v0}"
+        TASK="${2:-Isaac-SO-ARM100-Reach-v0}"
         echo "=== Training SO-ARM101: ${TASK} (headless) ==="
         cd "${SOARM_DIR}"
         $PYTHON -m isaac_so_arm101.scripts.rsl_rl.train --task "${TASK}" --headless
         ;;
 
     soarm-play)
-        TASK="${2:-SO-ARM100-Reach-Play-v0}"
+        TASK="${2:-Isaac-SO-ARM100-Reach-Play-v0}"
         echo "=== Playing SO-ARM101: ${TASK} (headless + video) ==="
         cd "${SOARM_DIR}"
         $PYTHON -m isaac_so_arm101.scripts.rsl_rl.play --task "${TASK}" --headless --video --video_length 200
@@ -72,7 +76,7 @@ case "${COMMAND}" in
     soarm-list)
         echo "=== Available SO-ARM101 environments ==="
         cd "${SOARM_DIR}"
-        $PYTHON -c "import gymnasium as gym; import isaac_so_arm101; [print(f'  {e}') for e in gym.envs.registry if 'SO' in e.upper() or 'ARM' in e.upper()]"
+        list_soarm_envs
         ;;
 
     help|*)

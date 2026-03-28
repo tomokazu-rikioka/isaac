@@ -14,6 +14,7 @@
 set -euo pipefail
 
 PROJECT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+source "${PROJECT_DIR}/scripts/env.sh"
 
 mkdir -p "${PROJECT_DIR}/logs"
 
@@ -28,8 +29,8 @@ echo "============================================"
 # --- Docker イメージ pull ---
 echo ""
 echo "[1/2] Pulling base Isaac Lab image (20-40 min)..."
-echo "  Image: nvcr.io/nvidia/isaac-lab:2.3.2"
-docker pull nvcr.io/nvidia/isaac-lab:2.3.2
+echo "  Image: ${BASE_IMAGE}"
+docker pull "${BASE_IMAGE}"
 
 # --- Docker イメージ build ---
 echo ""
