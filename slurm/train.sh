@@ -40,7 +40,7 @@ docker run --rm \
     -v "${PROJECT_DIR}/scripts:/workspace/scripts:ro" \
     --entrypoint bash \
     "${IMAGE}" \
-    -c "source /isaac-sim/setup_python_env.sh && source /workspace/scripts/env.sh && cd \${SOARM_DIR} && \${PYTHON} -m isaac_so_arm101.scripts.rsl_rl.train --task ${TASK} --headless"
+    -c "source /isaac-sim/setup_conda_env.sh && source /workspace/scripts/env.sh && cd \${SOARM_DIR} && \${PYTHON} -m isaac_so_arm101.scripts.rsl_rl.train --task ${TASK} --headless"
 
 echo ""
 echo "============================================"
