@@ -49,7 +49,6 @@ class SoArm101ReachEnvCfg(ReachEnvCfg):
         # override command generator body
         # end-effector is along z-direction
         self.commands.ee_pose.body_name = ["gripper_link"]
-        # self.commands.ee_pose.ranges.pitch = (math.pi, math.pi)
 
 
 @configclass
