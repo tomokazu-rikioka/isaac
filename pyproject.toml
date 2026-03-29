@@ -1,7 +1,7 @@
 [project]
 name = "isaac-so-arm101"
 version = "1.2.0"
-description = "Reinforcement Learning with the SO-ARM100 / SO-ARM101 in Isaac Lab"
+description = "Reinforcement Learning with the SO-ARM101 in Isaac Lab"
 readme = "README.md"
 authors = [
     { name = "Louis Le Lay", email = "le.lay.louis@gmail.com" }

@@ -4,7 +4,7 @@
 #
 # 使い方:
 #   cd ~/isaac && sbatch slurm/train.sh
-#   cd ~/isaac && sbatch slurm/train.sh Isaac-SO-ARM100-Reach-v0
+#   cd ~/isaac && sbatch slurm/train.sh Isaac-SO-ARM101-Reach-v0
 #
 #SBATCH --job-name=isaac-train
 #SBATCH --gpus=1
@@ -16,7 +16,7 @@ set -euo pipefail
 PROJECT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 source "${PROJECT_DIR}/scripts/env.sh"
 
-TASK="${1:-Isaac-SO-ARM100-Reach-v0}"
+TASK="${1:-Isaac-SO-ARM101-Reach-v0}"
 CONTAINER_NAME="isaac-train-${USER}-$$"
 
 # ログディレクトリの確保（SBATCH --output の相対パス用）

@@ -42,8 +42,8 @@ scp -r a100-highreso:~/isaac/logs/ ./logs/
 ```
 isaac/
 ├── README.md                    # プロジェクト概要・クイックスタート
-├── packages/
-│   └── isaac_so_arm101/         # SO-ARM101 タスク定義・ロボット設定（vendored）
+├── pyproject.toml               # Python パッケージ定義（isaac-so-arm101）
+├── src/isaac_so_arm101/         # SO-ARM101 タスク定義・ロボット設定
 ├── docker/
 │   ├── Dockerfile               # Isaac Lab 2.3.2 カスタムイメージ定義
 │   └── docker-compose.yml       # Docker Compose ビルド設定

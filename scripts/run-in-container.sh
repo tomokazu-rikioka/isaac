@@ -57,14 +57,14 @@ case "${COMMAND}" in
         ;;
 
     soarm-train)
-        TASK="${2:-Isaac-SO-ARM100-Reach-v0}"
+        TASK="${2:-Isaac-SO-ARM101-Reach-v0}"
         echo "=== Training SO-ARM101: ${TASK} (headless) ==="
         cd "${SOARM_DIR}"
         $PYTHON -m isaac_so_arm101.scripts.rsl_rl.train --task "${TASK}" --headless
         ;;
 
     soarm-play)
-        TASK="${2:-Isaac-SO-ARM100-Reach-Play-v0}"
+        TASK="${2:-Isaac-SO-ARM101-Reach-Play-v0}"
         echo "=== Playing SO-ARM101: ${TASK} (headless + video) ==="
         cd "${SOARM_DIR}"
         $PYTHON -m isaac_so_arm101.scripts.rsl_rl.play --task "${TASK}" --headless --video --video_length 200

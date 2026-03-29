@@ -4,7 +4,7 @@
 #
 # 使い方:
 #   cd ~/isaac && sbatch slurm/play.sh
-#   cd ~/isaac && sbatch slurm/play.sh Isaac-SO-ARM100-Reach-Play-v0
+#   cd ~/isaac && sbatch slurm/play.sh Isaac-SO-ARM101-Reach-Play-v0
 #
 #SBATCH --job-name=isaac-play
 #SBATCH --gpus=1
@@ -16,7 +16,7 @@ set -euo pipefail
 PROJECT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 source "${PROJECT_DIR}/scripts/env.sh"
 
-TASK="${1:-Isaac-SO-ARM100-Reach-Play-v0}"
+TASK="${1:-Isaac-SO-ARM101-Reach-Play-v0}"
 CONTAINER_NAME="isaac-play-${USER}-$$"
 
 mkdir -p "${PROJECT_DIR}/logs"

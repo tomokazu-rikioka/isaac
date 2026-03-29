@@ -78,7 +78,7 @@ docker images | grep isaac-lab
 cd ~/isaac && sbatch slurm/train.sh
 
 # タスクを指定する場合:
-cd ~/isaac && sbatch slurm/train.sh Isaac-SO-ARM100-Reach-v0
+cd ~/isaac && sbatch slurm/train.sh Isaac-SO-ARM101-Reach-v0
 ```
 
 ### 4.2 学習済みポリシーの評価（動画生成）
