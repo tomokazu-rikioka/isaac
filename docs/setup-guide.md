@@ -66,6 +66,18 @@ docker images | grep isaac-lab
 # isaac-lab   2.3.2   ...
 ```
 
+### 3.3 コンテナ内のディレクトリ構成
+
+Docker イメージ内では以下の配置になる:
+
+```
+/workspace/
+├── isaaclab/                # Isaac Lab 2.3.2 (ベースイメージ)
+└── isaac_so_arm101/         # SO-ARM101 パッケージ (editable install)
+    ├── pyproject.toml
+    └── src/isaac_so_arm101/
+```
+
 ---
 
 ## Phase 4: SO-ARM101 トレーニング・評価

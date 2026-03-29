@@ -12,7 +12,6 @@ from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
 
-# import mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg

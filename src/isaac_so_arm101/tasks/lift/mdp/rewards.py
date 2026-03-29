@@ -70,19 +70,3 @@ def object_goal_distance(
     distance = torch.norm(des_pos_w - object.data.root_pos_w[:, :3], dim=1)
     # rewarded if the object is lifted above the threshold
     return (object.data.root_pos_w[:, 2] > minimal_height) * (1 - torch.tanh(distance / std))
-
-
-def object_ee_distance_and_lifted(
-    env: ManagerBasedRLEnv,
-    std: float,
-    minimal_height: float,
-    object_cfg: SceneEntityCfg = SceneEntityCfg("object"),
-    ee_frame_cfg: SceneEntityCfg = SceneEntityCfg("ee_frame"),
-) -> torch.Tensor:
-    """Combined reward for reaching the object AND lifting it."""
-    # Get reaching reward
-    reach_reward = object_ee_distance(env, std, object_cfg, ee_frame_cfg)
-    # Get lifting reward
-    lift_reward = object_is_lifted(env, minimal_height, object_cfg)
-    # Combine rewards multiplicatively
-    return reach_reward * lift_reward

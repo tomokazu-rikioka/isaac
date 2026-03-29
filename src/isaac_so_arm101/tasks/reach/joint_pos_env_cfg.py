@@ -14,7 +14,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 
-# import mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
 from isaac_so_arm101.robots import SO_ARM101_CFG

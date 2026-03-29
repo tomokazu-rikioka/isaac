@@ -19,7 +19,8 @@ RUN uv pip install --system toml \
     && uv pip install --system numpy
 
 # SO-ARM101 のインストール
-COPY pyproject.toml src/ /workspace/isaac_so_arm101/
+COPY pyproject.toml /workspace/isaac_so_arm101/
+COPY src /workspace/isaac_so_arm101/src
 RUN cd /workspace/isaac_so_arm101 \
     && rm -rf .venv \
     && uv pip install --system --no-deps -e .
