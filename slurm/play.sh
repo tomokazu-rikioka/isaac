@@ -11,7 +11,7 @@
 #SBATCH --output=logs/play_%j.out
 #SBATCH --error=logs/play_%j.err
 
-source "$(dirname "$0")/_run.sh"
+source "${SLURM_SUBMIT_DIR}/slurm/_run.sh"
 
 TASK="${1:-Isaac-SO-ARM101-Reach-Play-v0}"
 
