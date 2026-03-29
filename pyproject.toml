@@ -5,7 +5,7 @@ description = "Reinforcement Learning with the SO-ARM101 in Isaac Lab"
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
-    "isaaclab[all,isaacsim]==2.3.0",
+    "isaaclab[all,isaacsim]==2.3.2",
     "torch==2.7.0",
     "torchvision==0.22.0",
 ]
@@ -16,6 +16,7 @@ play = "isaac_so_arm101.scripts.rsl_rl.play:main"
 
 [tool.uv]
 index-strategy = "unsafe-best-match"
+# Linux 専用だが win32 は Isaac Lab 公式テンプレートからの引き継ぎ（害なし）
 environments = [
   "sys_platform == 'linux' and implementation_name == 'cpython' and python_version == '3.11'",
   "sys_platform == 'win32' and implementation_name == 'cpython' and python_version == '3.11'"

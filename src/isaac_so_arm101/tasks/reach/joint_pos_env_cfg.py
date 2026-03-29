@@ -8,12 +8,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-# Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
-# All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-
-
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
 from isaac_so_arm101.robots import SO_ARM101_CFG
@@ -30,7 +24,7 @@ class SoArm101ReachEnvCfg(ReachEnvCfg):
         # post init of parent
         super().__post_init__()
 
-        # switch robot to franka
+        # Set SO-ARM101 as the robot
         self.scene.robot = SO_ARM101_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         # override rewards
         self.rewards.end_effector_position_tracking.params["asset_cfg"].body_names = ["gripper_link"]

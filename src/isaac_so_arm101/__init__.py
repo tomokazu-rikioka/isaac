@@ -1,3 +1,1 @@
-"""
-Python module serving as a project/extension template.
-"""
+"""SO-ARM101 reinforcement learning tasks and robot configuration for Isaac Lab."""

@@ -4,7 +4,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 
-TEMPLATE_ASSETS_DATA_DIR = Path(__file__).resolve().parent
+_ASSETS_DIR = Path(__file__).resolve().parent
 
 ##
 # Configuration
@@ -14,7 +14,7 @@ SO_ARM101_CFG = ArticulationCfg(
     spawn=sim_utils.UrdfFileCfg(
         fix_base=True,
         replace_cylinders_with_capsules=True,
-        asset_path=f"{TEMPLATE_ASSETS_DATA_DIR}/urdf/so_arm101.urdf",
+        asset_path=f"{_ASSETS_DIR}/urdf/so_arm101.urdf",
         activate_contact_sensors=False, # set as false while waiting for capsule implementation
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

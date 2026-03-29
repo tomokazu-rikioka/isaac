@@ -8,4 +8,4 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-from .trs_so101.so_arm101 import *
+from .so_arm101 import SO_ARM101_CFG
