@@ -36,7 +36,7 @@ docker run --rm \
     --gpus "device=${CUDA_VISIBLE_DEVICES}" \
     -e ACCEPT_EULA=Y \
     -e PRIVACY_CONSENT=Y \
-    -v "${PROJECT_DIR}/logs:/workspace/isaaclab/logs" \
+    -v "${PROJECT_DIR}/logs:/workspace/isaac_so_arm101/logs" \
     -v "${PROJECT_DIR}/scripts:/workspace/scripts:ro" \
     --entrypoint bash \
     "${IMAGE}" \
