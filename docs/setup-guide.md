@@ -67,7 +67,7 @@ cd ~/isaac && sbatch slurm/build.sh
 
 ```bash
 # ジョブ状態確認
-squeue -u $(whoami)
+squeue
 
 # ログ確認
 tail -f ~/isaac/logs/build_*.out
@@ -76,7 +76,6 @@ tail -f ~/isaac/logs/build_*.out
 ビルド完了後、イメージを確認:
 ```bash
 docker images | grep isaac-lab
-# isaac-lab   2.3.2   ...
 ```
 
 ### 3.3 コンテナ内のディレクトリ構成
@@ -219,51 +218,3 @@ scp -r a100-highreso:~/isaac/logs/ ./logs/
 | `--video_length` | 動画長（ステップ） | 200 |
 | `--load_run` | 評価する実行フォルダ名 | None |
 | `--checkpoint` | 評価するチェックポイント | None |
-
----
-
-## Phase 5: トラブルシューティング
-
-### Docker イメージが見つからない
-
-```bash
-docker images | grep isaac-lab
-# 出力がない場合、ビルドジョブを再実行:
-cd ~/isaac && sbatch slurm/build.sh
-```
-
-### GPU メモリ不足
-
-環境数を減らして再実行（コンテナ内で直接実行する場合）:
-
-```bash
-$PYTHON -m isaac_so_arm101.scripts.rsl_rl.train \
-    --task Isaac-SO-ARM101-Reach-v0 --headless --num_envs 1024
-```
-
-### ジョブが PENDING のまま動かない
-
-```bash
-squeue -u $(whoami)           # ジョブ状態確認
-sinfo                         # パーティション・ノード状態確認
-scancel <jobid>               # 必要に応じてキャンセル
-```
-
-### 評価時に「No checkpoint found」エラー
-
-学習ログが存在するか確認:
-
-```bash
-ls ~/isaac/logs/rsl_rl/reach/     # Reach の学習ログ
-ls ~/isaac/logs/rsl_rl/lift/      # Lift の学習ログ
-```
-
-特定の実行を指定して評価する場合は `--load_run` でフォルダ名を指定する（コンテナ内で直接実行）。
-
-### シェーダーコンパイルが長い
-
-初回起動時はシェーダーコンパイルに 30〜60 秒かかる。2回目以降はキャッシュにより短縮される。長時間かかる場合はログを確認:
-
-```bash
-tail -f ~/isaac/logs/train_*.out
-```

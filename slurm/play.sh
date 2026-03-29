@@ -11,14 +11,37 @@
 #SBATCH --output=logs/play_%j.out
 #SBATCH --error=logs/play_%j.err
 
-source "${SLURM_SUBMIT_DIR}/slurm/_run.sh"
+set -euo pipefail
+
+PROJECT_DIR="${SLURM_SUBMIT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+source "${PROJECT_DIR}/scripts/env.sh"
+
+mkdir -p "${PROJECT_DIR}/logs"
 
 TASK="${1:-Isaac-SO-ARM101-Reach-Play-v0}"
 
-print_banner "Isaac Lab Policy Evaluation" "${TASK}"
+echo "============================================"
+echo "  Isaac Lab Policy Evaluation"
+echo "============================================"
+echo "  Node  : $(hostname)"
+echo "  Task  : ${TASK}"
+echo "  GPU   : CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-not set}"
+echo "  Start : $(date)"
+echo "============================================"
 
-run_in_container "isaac-play-${USER}-$$" \
-    "\${PYTHON} -m isaac_so_arm101.scripts.rsl_rl.play --task ${TASK} --headless --video --video_length 200"
+HOST_UID=$(id -u)
+HOST_GID=$(id -g)
+
+docker run --rm \
+    --name "isaac-play-${USER}-$$" \
+    --gpus "device=${CUDA_VISIBLE_DEVICES}" \
+    -e ACCEPT_EULA=Y \
+    -e PRIVACY_CONSENT=Y \
+    -v "${PROJECT_DIR}/logs:/workspace/isaac_so_arm101/logs" \
+    -v "${PROJECT_DIR}/scripts:/workspace/scripts:ro" \
+    --entrypoint bash \
+    "${IMAGE}" \
+    -c "source /isaac-sim/setup_conda_env.sh && source /workspace/scripts/env.sh && cd \${SOARM_DIR} && \${PYTHON} -m isaac_so_arm101.scripts.rsl_rl.play --task ${TASK} --headless --video --video_length 200; chown -R ${HOST_UID}:${HOST_GID} /workspace/isaac_so_arm101/logs"
 
 echo ""
 echo "============================================"
