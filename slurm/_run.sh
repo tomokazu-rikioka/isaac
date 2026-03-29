@@ -30,6 +30,8 @@ print_banner() {
 run_in_container() {
     local container_name="$1"
     local cmd="$2"
+    local host_uid; host_uid=$(id -u)
+    local host_gid; host_gid=$(id -g)
     docker run --rm \
         --name "${container_name}" \
         --gpus "device=${CUDA_VISIBLE_DEVICES}" \
@@ -39,5 +41,5 @@ run_in_container() {
         -v "${PROJECT_DIR}/scripts:/workspace/scripts:ro" \
         --entrypoint bash \
         "${IMAGE}" \
-        -c "source /isaac-sim/setup_conda_env.sh && source /workspace/scripts/env.sh && cd \${SOARM_DIR} && ${cmd}"
+        -c "source /isaac-sim/setup_conda_env.sh && source /workspace/scripts/env.sh && cd \${SOARM_DIR} && ${cmd}; chown -R ${host_uid}:${host_gid} /workspace/isaac_so_arm101/logs"
 }
